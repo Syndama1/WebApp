@@ -10,22 +10,66 @@ div.header {
     top: 0%;
     width: 100%;
     text-align: center;
-    padding: 8px;
-}
-
-.header a.title {
-    color: whitesmoke;
-    text-align: center;
-    font-size: 32px;
-    transition: color 0.25s linear;
-    text-decoration: none;
-}
-
-.header a.title:hover {
-    color: darkgrey;
-    transition: color 0.25s linear;
+    padding: 22px;
 }
 
 div.content-wrapper {
     margin: 20%;
+}
+
+ul.nav-menu {
+    overflow: hidden;
+    list-style: none;
+    padding: 0;
+    position: relative;
+    width: 55%;
+    margin:0 auto;
+}
+
+.nav-menu li {
+    width: auto;
+    margin: 0 15px; 
+}
+
+.nav-menu li.logo {
+    color: whitesmoke;
+    font-size: 32px;
+    transition: color 0.25s linear;
+    text-decoration: none;
+    text-align: center;
+    width: 200px;
+    height: 40px;
+    position: fixed;
+    top: 0%;
+    left: 50%;
+    margin-top: 12px;
+    margin-left: -100px;
+    margin-right: 0px;
+}
+
+.nav-menu li.logo:hover {
+    color: darkgrey;
+    transition: color 0.25s linear;
+}
+
+.nav-menu li.nav-menu-left {
+    float: left;
+    text-align: left;
+}
+
+.nav-menu li.nav-menu-right {
+    float: right;
+    text-align: right;
+}
+
+.nav-menu li a {
+    color: whitesmoke;    
+    text-decoration: none;
+    transition: color 0.25s linear;
+}
+
+.nav-menu li a:hover {
+    color: darkgray;    
+    text-decoration: none;
+    transition: color 0.25s linear;
 }
