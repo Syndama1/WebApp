@@ -1,6 +1,7 @@
 const express = require('express');
 const ejs = require('ejs');
 const http = require('http');
+const https = require('https');
 const { Server } = require("socket.io");
 
 const app = express();
@@ -20,15 +21,12 @@ app.get('/about', (req, res) => {
     res.render('about');
 });
 
-io.on('connection', (socket) => {
-    io.emit('numpresses', numPresses);
-    socket.on('disconnect', () => {
-    });
+app.get('/playlists', (req, res) => {
+    res.render('playlists');
+});
 
-    socket.on('press', () => {
-        numPresses ++;
-        io.emit('numpresses', numPresses);
-    });
+io.on('connection', (socket) => {
+    
 });
 
 server.listen(443, () => {
