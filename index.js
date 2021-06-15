@@ -16,16 +16,17 @@ app.get(['/', '/home'], (req, res) => {
     res.render('index');
 });
 
+app.get('/about', (req, res) => {
+    res.render('about');
+});
+
 io.on('connection', (socket) => {
     io.emit('numpresses', numPresses);
-    console.log('a user connected');
     socket.on('disconnect', () => {
-      console.log('user disconnected');
     });
 
     socket.on('press', () => {
         numPresses ++;
-        console.log('Pressed');
         io.emit('numpresses', numPresses);
     });
 });
