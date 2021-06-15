@@ -11,8 +11,12 @@
 
     <%- include('header.ejs') %>
 
-    <div class='content-wrapper'>
-        <div class='button noselect' id='start'>START</div>
+    <div class='content-wrapper' style='height: 80vmin;'>
+        <div id='display' style='height: 40vmin; text-align: center; padding-top: 35px; font-size: 256px;'>0</div>
+
+        <div style='margin: auto; width: 112px;'>
+            <div class='button noselect' id='start'>START</div>
+        </div>
     </div>
     <footer>
         
@@ -26,9 +30,11 @@
 
         </div>
         
-    </footer>    
+    </footer>   
+    
 </body>
 
+<script src="/socket.io/socket.io.js"></script>
 <script src='js/client.js'></script>
 
 </html>

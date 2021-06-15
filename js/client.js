@@ -1,7 +1,12 @@
 const startButton = document.getElementById('start');
+var socket = io();
 
 startButton.onclick = function() {
 
-    console.log("start button pressed");
+    socket.emit('press');
 
-};    
+};
+
+socket.on('numpresses', function(num) {
+    document.getElementById('display').innerHTML = num;
+});
