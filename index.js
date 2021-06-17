@@ -3,9 +3,11 @@ const ejs = require('ejs');
 const http = require('http');
 const https = require('https');
 const { Server } = require("socket.io");
+const { Certificate } = require('crypto');
 
 const app = express();
 const server = http.createServer(app);
+const httpsServer = https.createServer(app);
 const io = new Server(server);
 
 var numPresses = 0;
@@ -29,6 +31,11 @@ io.on('connection', (socket) => {
     
 });
 
-server.listen(443, () => {
-    console.log("We're live on http://localhost:443");
+server.listen(8000, () => {
+    console.log("We're live on http://localhost:8000");
 });
+
+/* Gotta wait til I get a SSL key and Certificate.
+httpsServer.listen(443, () => {
+    console.log("We're live on https://localhost:443");
+}); */
