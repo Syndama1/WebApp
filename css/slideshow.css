@@ -1,0 +1,20 @@
+.slide {
+    display:none;
+}
+
+.left-button {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+}
+
+.right-button {
+    position: absolute;
+    top: 50%;
+    right: 0%;
+}
+
+.slideshow-container {
+    margin: auto;
+    width: 115px;
+}
