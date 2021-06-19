@@ -8,7 +8,11 @@ function plusDivs(n) {
 function cycleDiv() {
     plusDivs(1);
 
-    setTimeout(cycleDiv, 5000);
+    setTimeout(cycleDiv, 10000);
+}
+
+function currentDiv(n) {
+  showDivs(slideIndex = n);
 }
 
 function showDivs(n) {
@@ -23,3 +27,4 @@ function showDivs(n) {
   x[slideIndex-1].classList.add("active");
   x[slideIndex-1].classList.remove("inactive");
 }
+
