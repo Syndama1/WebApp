@@ -4,12 +4,22 @@ const http = require('http');
 const https = require('https');
 const path = require('path');
 const fs = require('fs');
+const mysql = require('mysql');
 const { Server } = require("socket.io");
 const { Certificate } = require('crypto');
+
+const sqlConfig = require('./sqlConfig.json')
 
 const app = express();
 const server = http.createServer(app);
 const httpsServer = https.createServer(app);
+const connection = mysql.createConnection({
+    host: sqlConfig.host,
+    user: sqlConfig.user,
+    password: sqlConfig.password,
+    database: sqlConfig.database
+});
+
 const io = new Server(server);
 
 var numPresses = 0;
@@ -17,6 +27,11 @@ var numPresses = 0;
 app.set('view engine', 'ejs');
 app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'views/gallery')]);
 app.use(express.static(__dirname));
+
+connection.connect((err) => {
+    if (err) throw err;
+    console.log('Connected to SQL Database!')
+});
 
 app.get(['/', '/home'], (req, res) => {
     res.render('index');
@@ -37,7 +52,7 @@ app.get('/gallery/view', (req, res) => {
     const videoPath = 'views/gallery/videos/feel.mp4';
     const videoSize = fs.statSync(videoPath).size;
     
-    const CHUNK_SIZE = 10 ** 6; // 1MB
+    const CHUNK_SIZE = (10 ** 6) * 8; // 8MB
     const start = Number(range.replace(/\D/g, ""));
     const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
 
