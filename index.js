@@ -22,7 +22,28 @@ const connection = mysql.createConnection({
 
 const io = new Server(server);
 
-var numPresses = 0;
+const getAllFiles = function(dirPath, arrayOfFiles) {
+    files = fs.readdirSync(dirPath);
+  
+    arrayOfFiles = arrayOfFiles || [];
+  
+    files.forEach(function(file) {
+        if (fs.statSync(dirPath + "/" + file).isDirectory()) {
+            arrayOfFiles = getAllFiles(dirPath + "/" + file, arrayOfFiles);
+        } else {
+            switch (path.extname(file)) {
+                case '.avi':
+                case '.mp4':
+                case '.mkv':
+                    arrayOfFiles.push(path.join(__dirname, dirPath, "/", file));
+            }
+        }
+    });
+  
+    return arrayOfFiles;
+};
+
+console.log(getAllFiles(sqlConfig['content-library']));
 
 app.set('view engine', 'ejs');
 app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'views/gallery')]);
