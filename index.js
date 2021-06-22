@@ -22,20 +22,25 @@ const connection = mysql.createConnection({
 
 const io = new Server(server);
 
-const getAllFiles = function(dirPath, arrayOfFiles) {
+const insertVideoSQL = function(videoName, videoType, videoPath) {
+    const sql = 'INSERT INTO videos (videoName, videoType, videoPath) VALUES ("' + videoName + '", "' + videoType + '", "' + videoPath + '")';
+    return sql;
+};
+
+const getAllVideoFiles = function(dirPath, arrayOfFiles) {
     files = fs.readdirSync(dirPath);
   
     arrayOfFiles = arrayOfFiles || [];
   
     files.forEach(function(file) {
         if (fs.statSync(dirPath + "/" + file).isDirectory()) {
-            arrayOfFiles = getAllFiles(dirPath + "/" + file, arrayOfFiles);
+            arrayOfFiles = getAllVideoFiles(dirPath + "/" + file, arrayOfFiles);
         } else {
+            fileName = file;
+            fileType = path.extname(file).replace('.', '');
             switch (path.extname(file)) {
-                case '.avi':
                 case '.mp4':
-                case '.mkv':
-                    arrayOfFiles.push(path.join(__dirname, dirPath, "/", file));
+                    arrayOfFiles.push({name: fileName, type: fileType, path: dirPath});
             }
         }
     });
@@ -43,16 +48,32 @@ const getAllFiles = function(dirPath, arrayOfFiles) {
     return arrayOfFiles;
 };
 
-console.log(getAllFiles(sqlConfig['content-library']));
+videoList = getAllVideoFiles(sqlConfig['content-library']);
+
+const pushToSQL = function(array) {
+    connection.query("DELETE FROM videos", (err) => {
+        if (err) null;
+    });
+
+    array.forEach(element => {
+        connection.query(insertVideoSQL(element.name, element.type, element.path), (err) => {
+            if (err) null;
+        });
+    });
+};
+
+
+connection.connect((err) => {
+    if (err) throw err;
+    console.log("Connected to SQL Database!");
+
+    pushToSQL(videoList);
+    
+});
 
 app.set('view engine', 'ejs');
 app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'views/gallery')]);
 app.use(express.static(__dirname));
-
-connection.connect((err) => {
-    if (err) throw err;
-    console.log('Connected to SQL Database!')
-});
 
 app.get(['/', '/home'], (req, res) => {
     res.render('index');
@@ -67,29 +88,46 @@ app.get('/gallery', (req, res) => {
 });
 
 app.get('/gallery/view', (req, res) => {
-    var range = req.get("range");
-    if (!range) { range = `bytes 0-`; }
+    videoID = req.query.q;
+    if (!videoID) {
+        res.redirect('/gallery');
+        throw null;
+    };
 
-    const videoPath = 'views/gallery/videos/feel.mp4';
-    const videoSize = fs.statSync(videoPath).size;
-    
-    const CHUNK_SIZE = (10 ** 6) * 8; // 8MB
-    const start = Number(range.replace(/\D/g, ""));
-    const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+    connection.query("SELECT * FROM videos WHERE id = " + req.query.q, (err, result) => {
+        if (err) {
+            res.redirect('/gallery');
+            throw err;
+        };
 
-    const contentLength = end - start + 1;
-    const headers = {
-        "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-        "Accept-Ranges": "bytes",
-        "Content-Length": contentLength,
-        "Content-Type": "video/mp4,"
-    }
+        const videoPath = result[0].videoPath + '/' + result[0].videoName;
+        const videoType = result[0].videoType;
+        
+        var range = req.get("range");
+        if (!range) { range = `bytes 0-`; }
 
-    res.writeHead(206, headers);
+        
+        const videoSize = fs.statSync(videoPath).size;
+        
+        const CHUNK_SIZE = (10 ** 6) * 8; // 8MB
+        const start = Number(range.replace(/\D/g, ""));
+        const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
 
-    const videoStream = fs.createReadStream(videoPath, { start, end });
+        const contentLength = end - start + 1;
+        const headers = {
+            "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": contentLength,
+            "Content-Type": "video/" + videoType
+        };
 
-    videoStream.pipe(res);
+        res.writeHead(206, headers);
+
+        const videoStream = fs.createReadStream(videoPath, { start, end });
+
+        videoStream.pipe(res);
+    });
+
 });
 
 app.get('/playlists', (req, res) => {
