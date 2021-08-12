@@ -22,7 +22,7 @@ const connection = mysql.createConnection({
 
 const io = new Server(server);
 
-// Code for programming building a video library, using SQL, but needs to be fixed with proper video reference indexing. Also want to move to it's own module.
+// Code for building a video library, using SQL, but needs to be fixed with proper video reference indexing. Also want to move to it's own module.
 
 // const insertVideoSQL = function(videoName, videoType, videoPath) {
 //     const sql = 'INSERT INTO videos (videoName, videoType, videoPath) VALUES ("' + videoName + '", "' + videoType + '", "' + videoPath + '")';
@@ -72,7 +72,7 @@ const io = new Server(server);
 // });
 
 app.set('view engine', 'ejs');
-app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'views/gallery')]);
+app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'views/gallery'), path.join(__dirname, 'vibehub')]);
 app.use(express.static(__dirname));
 
 app.get(['/', '/home'], (req, res) => {
@@ -83,8 +83,11 @@ app.get('/about', (req, res) => {
     res.render('about');
 });
 
+app.get(['/vibehub/', 'vibehub/home'], (req, res) => {
+    res.render('vibehubIndex');
+});
 
-// Code for programming building a video library, using SQL, but needs to be fixed with proper video reference indexing. Also want to move to it's own module.
+// Code for building a video library, using SQL, but needs to be fixed with proper video reference indexing. Also want to move to it's own module.
 
 // app.get('/gallery', (req, res) => {
 //     res.render('gallery');
